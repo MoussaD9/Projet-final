@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CommandeFacile — SaaS de gestion des commandes</title>
+<link rel="stylesheet" href="style.css">
+<script src="script.js" defer></script>
+</head>
+<body>
+<section id="auth" class="auth" hidden>
+ <div class="authcard">
+  <div class="brand"><span class="logo" aria-hidden="true">C</span>CommandeFacile</div>
+  <p class="muted">Toutes vos commandes. Un espace clair. Zéro oubli.</p>
+  <p class="proto">Mode prototype : les comptes sont simulés et restent sur ce navigateur. Ce n'est pas une authentification sécurisée.</p>
+  <form id="loginForm" novalidate>
+   <h1>Connexion</h1>
+   <label>E-mail<input id="l_email" type="email" autocomplete="email"><em class="err" data-for="l_email"></em></label>
+   <label>Mot de passe<input id="l_pw" type="password" autocomplete="current-password"><em class="err" data-for="l_pw"></em></label>
+   <p class="muted small">Mot de passe oublié ? Non disponible dans le prototype.</p>
+   <button class="btn primary" type="submit">Se connecter</button>
+   <button class="btn" type="button" id="demoIn">Entrer dans la démo</button>
+   <button class="link" type="button" data-auth="register">Créer un compte</button>
+  </form>
+  <form id="regForm" novalidate hidden>
+   <h1>Créer un compte</h1>
+   <div class="grid">
+    <label>Nom complet *<input id="r_name"><em class="err" data-for="r_name"></em></label>
+    <label>Boutique / entreprise *<input id="r_shop"><em class="err" data-for="r_shop"></em></label>
+    <label>E-mail *<input id="r_email" type="email"><em class="err" data-for="r_email"></em></label>
+    <label>Téléphone *<input id="r_phone" inputmode="tel"><em class="err" data-for="r_phone"></em></label>
+    <label>Ville / zone<input id="r_city" placeholder="Dakar, Thiès…"></label>
+    <label>Secteur<select id="r_sector"></select></label>
+    <label>Mot de passe *<input id="r_pw" type="password" autocomplete="new-password"><em class="err" data-for="r_pw"></em></label>
+    <label>Confirmation *<input id="r_pw2" type="password" autocomplete="new-password"><em class="err" data-for="r_pw2"></em></label>
+   </div>
+   <label class="chk"><input id="r_ok" type="checkbox"> Je comprends que mes informations sont conservées localement sur cet appareil (démo).</label><em class="err" data-for="r_ok"></em>
+   <button class="btn primary" type="submit">Créer mon compte</button>
+   <button class="link" type="button" data-auth="login">J'ai déjà un compte</button>
+  </form>
+ </div>
+</section>
+
+<div id="app" hidden>
+<aside class="side">
+ <div class="brand"><span class="logo" aria-hidden="true">C</span><span>CommandeFacile</span></div>
+ <nav aria-label="Navigation principale">
+  <button class="nav on" data-view="dashboard" type="button">Vue d'ensemble</button>
+  <button class="nav" data-view="orders" type="button">Commandes</button>
+  <button class="nav" data-view="profile" type="button">Mon profil</button>
+  <button class="nav" data-view="settings" type="button">Paramètres</button>
+ </nav>
+ <p class="tag">Données locales à cet appareil.</p>
+</aside>
+<main>
+ <header class="top">
+  <div><h1 id="title"></h1><p id="sub" class="muted"></p><p class="hello" id="hello"></p></div>
+  <div class="row">
+   <button class="btn primary" id="newBtn" type="button">+ Nouvelle commande</button>
+   <div class="acct">
+    <button class="who2" id="avBtn" type="button" aria-haspopup="true" aria-expanded="false"><span class="avatar" id="avatar" aria-hidden="true"></span><span id="uname"></span></button>
+    <div class="menu" id="menu" hidden>
+     <button type="button" data-go="profile">Mon profil</button>
+     <button type="button" data-go="settings">Paramètres</button>
+     <button type="button" id="logout">Se déconnecter</button>
+    </div>
+   </div>
+  </div>
+ </header>
+
+ <section id="v-dashboard" class="view">
+  <div class="kpis" id="kpis"></div>
+  <p class="muted note">Chiffre d'affaires = commandes « Livrée » uniquement. « En cours » = Confirmée + En livraison. « Non livrées » = En attente, Confirmée, En livraison.</p>
+  <div class="card"><h2>Commandes récentes</h2><div id="recent"></div></div>
+ </section>
+
+ <section id="v-orders" class="view" hidden>
+  <div class="card filters">
+   <label>Rechercher<input id="q" type="search" placeholder="Client, téléphone, produit, zone ou n°"></label>
+   <label>Statut<select id="fs"></select></label>
+   <label>Tri<select id="sort"><option value="desc">Plus récentes</option><option value="asc">Plus anciennes</option></select></label>
+   <button class="btn" id="reset" type="button">Réinitialiser</button>
+  </div>
+  <div id="list"></div>
+ </section>
+
+ <section id="v-profile" class="view" hidden>
+  <form class="card" id="profForm" novalidate>
+   <div class="row ph"><span class="avatar big" id="avatar2" aria-hidden="true"></span><div><h2 id="pshop"></h2><p class="muted small" id="since"></p></div></div>
+   <div class="grid">
+    <label>Nom complet *<input id="p_name"><em class="err" data-for="p_name"></em></label>
+    <label>Boutique *<input id="p_shop"><em class="err" data-for="p_shop"></em></label>
+    <label>E-mail *<input id="p_email" type="email"><em class="err" data-for="p_email"></em></label>
+    <label>Téléphone *<input id="p_phone" inputmode="tel"><em class="err" data-for="p_phone"></em></label>
+    <label>Ville / zone<input id="p_city"></label>
+    <label>Secteur<select id="p_sector"></select></label>
+    <label class="wide">Bio de la boutique<textarea id="p_bio" rows="3"></textarea></label>
+   </div>
+   <p class="muted small">Pas de photo dans ce prototype : vos initiales servent d'avatar.</p>
+   <div class="row end"><button class="btn" id="pcancel" type="button">Annuler</button><button class="btn primary" type="submit">Enregistrer les modifications</button></div>
+  </form>
+ </section>
+
+ <section id="v-settings" class="view" hidden>
+  <div class="card">
+   <h2>Préférences</h2>
+   <label>Thème<select id="theme"><option value="dark">Sombre</option><option value="light">Clair</option></select></label>
+   <p class="muted small">Devise : FCFA (XOF). Dates au format français.</p>
+  </div>
+  <div class="card gap">
+   <h2>Mes données</h2>
+   <p class="muted">Stockées uniquement dans ce navigateur. Toute personne y ayant accès peut les lire ou les modifier.</p>
+   <div class="row">
+    <button class="btn" id="expJson" type="button">Exporter (JSON)</button>
+    <button class="btn" id="expCsv" type="button">Exporter (CSV)</button>
+    <button class="btn" id="demo" type="button">Ajouter des commandes d'exemple</button>
+    <button class="btn danger" id="wipe" type="button">Réinitialiser les commandes</button>
+    <button class="btn danger" id="delProf" type="button">Supprimer mon profil</button>
+   </div>
+  </div>
+ </section>
+</main>
+</div>
+
+<dialog id="dlg" aria-labelledby="dtitle">
+ <form id="form" novalidate>
+  <h2 id="dtitle">Nouvelle commande</h2>
+  <input type="hidden" id="id">
+  <div class="grid">
+   <label>Nom du client *<input id="client" autocomplete="off"><em class="err" data-for="client"></em></label>
+   <label>Téléphone * (ex. 221771234567)<input id="phone" inputmode="tel"><em class="err" data-for="phone"></em></label>
+   <label class="wide">Adresse ou zone de livraison *<input id="address"><em class="err" data-for="address"></em></label>
+   <label class="wide">Produit *<input id="product"><em class="err" data-for="product"></em></label>
+   <label>Quantité *<input id="qty" type="number" min="1" step="1" value="1"><em class="err" data-for="qty"></em></label>
+   <label>Prix unitaire (FCFA) *<input id="price" type="number" min="0" step="1"><em class="err" data-for="price"></em></label>
+   <label>Frais de livraison (FCFA)<input id="ship" type="number" min="0" step="1" value="0"><em class="err" data-for="ship"></em></label>
+   <label>Statut<select id="status"></select></label>
+   <label>Source<select id="source"></select></label>
+   <label class="wide">Note interne<textarea id="note" rows="2"></textarea></label>
+  </div>
+  <p class="total">Total : <strong id="total">0 FCFA</strong></p>
+  <div class="row end"><button class="btn" type="button" id="cancel">Annuler</button><button class="btn primary" type="submit">Enregistrer</button></div>
+ </form>
+</dialog>
+<dialog id="detail" aria-labelledby="ddt"><h2 id="ddt">Détails</h2><dl id="dl"></dl><div class="row end"><button class="btn" id="dclose" type="button">Fermer</button></div></dialog>
+<dialog id="confirm"><h2>Supprimer cette commande ?</h2><p class="muted">Cette action est définitive.</p><div class="row end"><button class="btn" id="no" type="button">Annuler</button><button class="btn danger" id="yes" type="button">Supprimer</button></div></dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
