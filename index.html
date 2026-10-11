@@ -42,7 +42,7 @@
 </section>
 
 <div id="app" hidden>
-<aside class="side">
+<aside class="side" id="side">
  <div class="brand"><span class="logo" aria-hidden="true">C</span><span>CommandeFacile</span></div>
  <nav aria-label="Navigation principale">
   <button class="nav on" data-view="dashboard" type="button">Vue d'ensemble</button>
@@ -52,19 +52,23 @@
  </nav>
  <p class="tag">Données locales à cet appareil.</p>
 </aside>
+<div class="scrim" id="scrim" hidden></div>
 <main>
- <header class="top">
-  <div><h1 id="title"></h1><p id="sub" class="muted"></p><p class="hello" id="hello"></p></div>
-  <div class="row">
-   <button class="btn primary" id="newBtn" type="button">+ Nouvelle commande</button>
-   <div class="acct">
-    <button class="who2" id="avBtn" type="button" aria-haspopup="true" aria-expanded="false"><span class="avatar" id="avatar" aria-hidden="true"></span><span id="uname"></span></button>
+ <div class="bar">
+  <div class="barL"><button class="burger" id="burger" type="button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="side"><span></span><span></span><span></span></button><span class="mbrand">CommandeFacile</span></div>
+  <div class="acct">
+    <button class="who2" id="avBtn" type="button" aria-label="Menu du compte" aria-haspopup="true" aria-expanded="false"><span class="avatar" id="avatar" aria-hidden="true"></span><span id="uname"></span></button>
     <div class="menu" id="menu" hidden>
      <button type="button" data-go="profile">Mon profil</button>
      <button type="button" data-go="settings">Paramètres</button>
      <button type="button" id="logout">Se déconnecter</button>
     </div>
    </div>
+ </div>
+ <header class="top">
+  <div><h1 id="title"></h1><p id="sub" class="muted"></p><p class="hello" id="hello"></p></div>
+  <div class="row">
+   <button class="btn primary" id="newBtn" type="button">+ Nouvelle commande</button>
   </div>
  </header>
 

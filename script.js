@@ -182,7 +182,7 @@ function addDemo() {
 /* ---------- Navigation & init ---------- */
 const TITLES = { profile: ['Mon profil', 'Gérez les informations de votre boutique.'], dashboard: ['Tableau de bord', 'Un aperçu clair de votre activité.'], orders: ['Commandes', 'Recherchez, suivez et contactez vos clients.'], settings: ['Paramètres', 'Exportez et gérez vos données.'] };
 function show(v) {
-  view = v;
+  view = v; window.scrollTo(0, 0);
   document.querySelectorAll('.view').forEach((s) => (s.hidden = s.id !== 'v-' + v));
   document.querySelectorAll('.nav').forEach((b) => b.classList.toggle('on', b.dataset.view === v));
   $('#title').textContent = TITLES[v][0]; $('#sub').textContent = TITLES[v][1];
@@ -279,6 +279,13 @@ function onProfileSave(e) {
   if (jset(PK, profiles().map((p) => (p.id === profile.id ? profile : p)))) { applyProfile(); toast('Profil mis à jour.'); }
 }
 function wireAccount() {
+  const side = $('#side'), scrim = $('#scrim');
+  const setNav = (o) => { side.classList.toggle('open', o); scrim.hidden = !o; $('#burger').setAttribute('aria-expanded', String(o)); $('#burger').setAttribute('aria-label', o ? 'Fermer le menu' : 'Ouvrir le menu'); document.body.classList.toggle('lock', o); if (o) side.querySelector('.nav').focus(); };
+  $('#burger').addEventListener('click', () => setNav(!side.classList.contains('open')));
+  scrim.addEventListener('click', () => setNav(false));
+  document.querySelectorAll('.nav').forEach((b) => b.addEventListener('click', () => setNav(false)));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && side.classList.contains('open')) { setNav(false); $('#burger').focus(); } });
+  window.addEventListener('resize', () => { if (window.innerWidth > 820) setNav(false); });
   [$('#r_sector'), $('#p_sector')].forEach((s) => SECTORS.forEach((x) => s.append(new Option(x, x))));
   SOURCES.forEach((x) => $('#source').append(new Option(x, x)));
   document.querySelectorAll('[data-auth]').forEach((b) => b.addEventListener('click', () => showAuth(b.dataset.auth)));
